@@ -26,6 +26,7 @@ import Prelude.Compat
 
 import Control.Lens hiding (allOf)
 import Data.Data.Lens (template)
+import Debug.Trace
 
 import Control.Monad
 import Control.Monad.Writer hiding (First, Last)
@@ -249,7 +250,7 @@ declareSchemaRef proxy = do
       when (not known) $ do
         declare [(name, schema)]
         void $ declareNamedSchema proxy
-      return $ Ref (Reference name)
+      return $ Ref $ Debug.Trace.traceShow ("REFERENCE: " ++ T.unpack name) (Reference name)
     _ -> Inline <$> declareSchema proxy
 
 -- | Inline any referenced schema if its name satisfies given predicate.
@@ -901,9 +902,10 @@ genericNameSchema :: forall a d f.
   => SchemaOptions -> Proxy a -> Schema -> NamedSchema
 genericNameSchema opts _ = NamedSchema (gdatatypeSchemaName opts (Proxy :: Proxy d))
 
+-- 
 gdatatypeSchemaName :: forall d. Datatype d => SchemaOptions -> Proxy d -> Maybe T.Text
 gdatatypeSchemaName opts _ = case orig of
-  (c:_) | isAlpha c && isUpper c -> Just (T.pack name)
+  (c:_) | isAlpha c && isUpper c -> Just (T.pack $ name)
   _ -> Nothing
   where
     orig = datatypeName (Proxy3 :: Proxy3 d f a)
