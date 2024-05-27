@@ -490,6 +490,12 @@ validateSchemaType val = withSchema $ \sch ->
         0 -> invalid $ "Value not valid under any of 'oneOf' schemas: " ++ show val
         1 -> valid
         _ -> invalid $ "Value matches more than one of 'oneOf' schemas: " ++ show val
+    (view anyOf -> Just variants) -> do
+      res <- forM variants $ \var ->
+        (True <$ validateWithSchemaRef var val) <|> (return False)
+      case length $ filter id res of
+        0 -> invalid $ "Value not valid under any of 'anyOf' schemas: " ++ show val
+        _ -> valid
     (view allOf -> Just variants) -> do
       -- Default semantics for Validation Monad will abort when at least one
       -- variant does not match.
