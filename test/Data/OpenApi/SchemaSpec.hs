@@ -8,7 +8,7 @@ import Prelude ()
 import Prelude.Compat
 
 import Control.Lens ((^.))
-import Data.Aeson (Value)
+import Data.Aeson (Value(..))
 import qualified Data.HashMap.Strict.InsOrd as InsOrdHashMap
 import Data.Proxy
 import Data.Set (Set)
@@ -68,6 +68,10 @@ spec = do
     context "Unit" $ checkToSchema (Proxy :: Proxy Unit) unitSchemaJSON
     context "Person" $ checkToSchema (Proxy :: Proxy Person) personSchemaJSON
     context "ISPair" $ checkToSchema (Proxy :: Proxy ISPair) ispairSchemaJSON
+    context "Either String Int" $ checkToSchema (Proxy :: Proxy EitherStringInt) eitherSchemaJSON
+    context "ISHomogeneousPair" $ checkToSchema (Proxy :: Proxy ISHomogeneousPair) ishomogeneouspairSchemaJSON
+    context "PairWithRef" $ checkToSchema (Proxy :: Proxy PairWithRef) pairwithrefSchemaJSON
+    context "PairWithNullRef" $ checkToSchema (Proxy :: Proxy PairWithNullRef) pairwithnullrefSchemaJSON
     context "Point (fieldLabelModifier)" $ checkToSchema (Proxy :: Proxy Point) pointSchemaJSON
     context "Point5 (many field record)" $ do
       checkToSchema (Proxy :: Proxy Point5) point5SchemaJSON
@@ -81,6 +85,7 @@ spec = do
       context "UserId (non-record newtype)" $ checkToSchema (Proxy :: Proxy UserId) userIdSchemaJSON
       context "Player (unary record)" $ checkToSchema (Proxy :: Proxy Player) playerSchemaJSON
       context "SingleMaybeField (unary record with Maybe)" $ checkToSchema (Proxy :: Proxy SingleMaybeField) singleMaybeFieldSchemaJSON
+      context "Painter (record with an optional reference)" $ checkToSchema (Proxy :: Proxy Painter) painterSchemaJSON
       context "Natural Language (single field data with recursive fields)" $ checkToSchemaDeclare (Proxy :: Proxy Predicate) predicateSchemaDeclareJSON
     context "Players (inlining schema)" $ checkToSchema (Proxy :: Proxy Players) playersSchemaJSON
     context "MyRoseTree (datatypeNameModifier)" $ checkToSchema (Proxy :: Proxy MyRoseTree) myRoseTreeSchemaJSON
@@ -95,6 +100,7 @@ spec = do
       context "(Int, Float)" $ checkSchemaName Nothing (Proxy :: Proxy (Int, Float))
       context "Person" $ checkSchemaName (Just "Person") (Proxy :: Proxy Person)
       context "Shade" $ checkSchemaName (Just "Shade") (Proxy :: Proxy Shade)
+      context "Player (polymorphic record)" $ checkSchemaName (Just "PlayerPoly__40_PointG_Int_41_") (Proxy :: Proxy (PlayerPoly (PointG Int)))
   describe "Generic Definitions" $ do
     context "Unit" $ checkDefs (Proxy :: Proxy Unit) []
     context "Paint" $ checkDefs (Proxy :: Proxy Paint) ["Color"]
